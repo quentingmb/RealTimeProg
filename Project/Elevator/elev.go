@@ -1,3 +1,8 @@
+//A completer 
+//ajouter de nouvelles fonctions si besoin
+//completer la fonction setSpeed
+//ajouter les imports
+
 package elevator
 import (
 )
