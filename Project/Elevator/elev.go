@@ -26,7 +26,7 @@ var Button_channel_matrix = [N_FLOORS][N_BUTTONS]int{
 	{driver.FLOOR_UP4, driver.FLOOR_DOWN4, driver.FLOOR_COMMAND4},
 }
 
-func SetElevSpeed (speed int) {
+func SetElevSpeed(speed int) {
 	if speed == 0 {
 		if driver.ReadBit(driver.MOTORDIR) {
 			driver.ClearBit(driver.MOTORDIR)
@@ -42,7 +42,7 @@ func SetElevSpeed (speed int) {
 	}
 	driver.WriteAnalog(driver.MOTOR, 2048+4*math.Abs(speed))
 }
-func CurrentFloor() int {
+func InFloor() int {
 	floor := 1
 	if driver.ReadBit(driver.FLOOR_IND2) {
 		floor = floor + 1
