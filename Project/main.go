@@ -71,6 +71,6 @@ func main() {
 				elevator.ElevSetSpeed(0)
 			}
 		}
-		state, takerequest = requestcontroller.Nextstate(myip, conf.Elevators, myinfo.State)
+		state, takerequest = elevatorlogic.Nextstate(myip, conf.Elevators, myinfo.State)
 	}
 }
