@@ -96,17 +96,17 @@ func InitUpdate(connection *net.TCPConn, myip string, error_c chan string) {
 
 //Check if there is any new orders, if it is it passes it to Neworder
 func Requestdistr(generatedMsgs_c chan ElevatorMessage, myip string) {
-	var button elevator.Elev_button
+	var button Elevator.Elev_button
 	for {
-		for floor, buttons := range elevator.Button_channel_matrix {
+		for floor, buttons := range Elevator.Button_channel_matrix {
 			for butt, channel := range buttons {
 				if drivers.ReadBit(channel) {
 					if butt == 0 {
-						button = elevator.BUTTON_CALL_UP
+						button = Elevator.BUTTON_CALL_UP
 					} else if butt == 1 {
-						button = elevator.BUTTON_CALL_DOWN
+						button = Elevator.BUTTON_CALL_DOWN
 					} else {
-						button = elevator.BUTTON_COMMAND
+						button = Elevator.BUTTON_COMMAND
 					}
 					Neworder(generatedMsgs_c, Request{Direction: button, Floor: floor + 1, Type: 1, IpSourceource: myip})
 					time.Sleep(time.Millisecond)
@@ -125,11 +125,11 @@ func Dialer(connect_c chan Con, port string, elevators []config.Elevator, error_
 		for _, elevator := range elevators {
 			cons := connections
 			for _, connection := range cons {
-				if strings.Split(connection.RemoteAddr().String(), ":")[0] == elevator.Address {
+				if strings.Split(connection.RemoteAddr().String(), ":")[0] == Elevator.Address {
 					continue elevatorloop
 				}
 			}
-			raddr, err := net.ResolveTCPAddr("tcp", elevator.Address+port)
+			raddr, err := net.ResolveTCPAddr("tcp", Elevator.Address+port)
 			dialConn, err := net.DialTCP("tcp", nil, raddr)
 			if err != nil {
 				error_c <- "Dial trouble: " + err.Error()
@@ -188,7 +188,7 @@ func SendAliveMessages(connection *net.TCPConn, error_c chan string) {
 }
 
 func TCPPeerToPeer(conf extra.Config, myip string, generatedmessages_c chan Elevatormessage) {
-	elevlog, err := os.OpenFile("elevator.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	elevlog, err := os.OpenFile("Elevator.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		fmt.Println("Error opening file: " + err.Error())
 	}
@@ -227,10 +227,10 @@ func TCPPeerToPeer(conf extra.Config, myip string, generatedmessages_c chan Elev
 		case received := <-receivedmessages_c:
 			{
 				if received.Request.Floor > 0 {
-					if !((received.Request.Direction == elevator.BUTTON_COMMAND) && (received.Request.Source != myip)) {
-						elevator.ElevSetButtonLamp(received.Request.Direction, received.Request.Floor, received.Request.InOut)
+					if !((received.Request.Direction == Elevator.BUTTON_COMMAND) && (received.Request.Source != myip)) {
+						Elevator.ElevSetButtonLamp(received.Request.Direction, received.Request.Floor, received.Request.InOut)
 					}
-					if received.Request.Direction != elevator.BUTTON_COMMAND {
+					if received.Request.Direction != Elevator.BUTTON_COMMAND {
 						received.Request.Source = ""
 					}
 					if received.Request.InOut == 0 {
@@ -292,7 +292,7 @@ func NewInfo(info Info, generatedMsgs_c chan Elevatormessage) bool {
 }
 
 func Neworder(generatedMsgs_c chan ElevatorMessage, request Request) bool {
-	if request.Direction != elevator.BUTTON_COMMAND {
+	if request.Direction != Elevator.BUTTON_COMMAND {
 		request.IpSource = ""
 	}
 	for _, r := range requestlist {
@@ -303,4 +303,3 @@ func Neworder(generatedMsgs_c chan ElevatorMessage, request Request) bool {
 	generatedMsgs_c <- ElevatorMessage{Request: request, Info: Info{}}
 	return true
 }
-
