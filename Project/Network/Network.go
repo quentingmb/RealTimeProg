@@ -1,8 +1,8 @@
-package network
+package Network
 
 import (
 	"drivers"
-	"elevator"
+	"Elevator"
 	"encoding/json"
 	"fmt"
 	"log"
