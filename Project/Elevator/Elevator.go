@@ -1,7 +1,7 @@
 //A completer 
 //ajouter les imports
 
-package elevator
+package Elevator
 import (
 	"driver"
 	"math"
