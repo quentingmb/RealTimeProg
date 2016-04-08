@@ -187,7 +187,7 @@ func SendAliveMessages(connection *net.TCPConn, error_c chan string) {
 	}
 }
 
-func TCPPeerToPeer(conf config.Config, myip string, generatedmessages_c chan Elevatormessage) {
+func TCPPeerToPeer(conf extra.Config, myip string, generatedmessages_c chan Elevatormessage) {
 	elevlog, err := os.OpenFile("elevator.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		fmt.Println("Error opening file: " + err.Error())
