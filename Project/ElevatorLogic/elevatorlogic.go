@@ -3,7 +3,7 @@ package elevatorlogic
 
 import (
 	"elevator"
-	"config"
+	"extra"
 	"network"
 )
 //This function does a BFS-search through all orders to find the most effective solution
