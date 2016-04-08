@@ -1,10 +1,10 @@
 //A completer 
-//ajouter de nouvelles fonctions si besoin
-//completer la fonction setSpeed
 //ajouter les imports
 
 package elevator
 import (
+	"driver"
+	
 )
 
 const N_FlOORS = 4
@@ -26,15 +26,30 @@ var Button_channel_matrix = [N_FLOORS][N_BUTTONS]int{
 	{driver.FLOOR_UP4, driver.FLOOR_DOWN4, driver.FLOOR_COMMAND4},
 }
 
-func SetElevSpeed
+func SetElevSpeed (speed int) {
+	if speed == 0 {
+		if driver.ReadBit(driver.MOTORDIR) {
+			driver.ClearBit(driver.MOTORDIR)
+		} else {
+			driver.SetBit(driver.MOTORDIR)
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+	if speed > 0 {
+		driver.ClearBit(driver.MOTORDIR)
+	} else {
+		driver.SetBit(driver.MOTORDIR)
+	}
+	driver.WriteAnalog(driver.MOTOR, 2048+4*math.Abs(speed))
+}
 func SetElevFloorIndicator(floor int) {
 	//one light sould be on
-	if floor == 1 || floor == 2 {
+	if floor == 3 || floor == 4 {
 		driver.Set_bit(driver.FLOOR_IND1)
 	} else {
 		driver.Clear_bit(driver.FLOOR_IND1)
 	}
-	if floor == 3 || floor == 4 {
+	if floor == 2 || floor == 4 {
 		driver.Set_bit(driver.FLOOR_IND2)
 	} else {
 		driver.Clear_bit(driver.FLOOR_IND2)
