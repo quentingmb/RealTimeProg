@@ -4,7 +4,7 @@
 package elevator
 import (
 	"driver"
-	
+	"math"
 )
 
 const N_FlOORS = 4
