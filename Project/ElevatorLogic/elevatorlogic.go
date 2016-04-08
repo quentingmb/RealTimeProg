@@ -89,7 +89,7 @@ func Stop(myip string, mystate string) []network.Request {
 	requestlist := network.GetRequestList()
 	for _, request := range requestlist {
 		if (request.Direction == elevator.BUTTON_COMMAND && request.Source == myip) || (request.Direction == elevator.BUTTON_CALL_UP && mystate == "UP") || (request.Direction == elevator.BUTTON_CALL_DOWN && mystate == "DOWN") {
-			if request.Floor == elevator.CurrentFloor() && elevator.ElevAtFloor() {
+			if request.Floor == elevator.CurrentFloor() && elevator.AtFloor() {
 				takerequest = append(takerequest, request)
 			}
 		}
@@ -98,11 +98,11 @@ func Stop(myip string, mystate string) []network.Request {
 }
 //This function returns the next state for the elevator
 func Nextstate(myip string, elevators []misc.Elevator, mystate string) (string, []network.Request) {
-	if elevator.ElevGetObstructionSignal() {
-		elevator.ElevSetStopLamp(1)
+	if elevator.GetElevObstructionSignal() {
+		elevator.SetElevStopLamp(1)
 		return "ERROR", nil
 	} else if mystate == "ERROR" {
-		elevator.ElevSetStopLamp(0)
+		elevator.SetElevStopLamp(0)
 		return "INIT", nil
 	}
 
@@ -112,14 +112,14 @@ func Nextstate(myip string, elevators []misc.Elevator, mystate string) (string, 
 	}
 
 	next := Nextrequest(myip, elevators)
-	if elevator.ElevAtFloor() && next.Floor == elevator.CurrentFloor() {
+	if elevator.AtFloor() && next.Floor == elevator.CurrentFloor() {
 		return "DOOR_OPEN", append(stop, next)
 	}
 	if next.Floor > elevator.CurrentFloor() {
 		return "UP", nil
 	} else if next.Floor < elevator.CurrentFloor() && next.Floor != 0 {
 		return "DOWN", nil
-	} else if elevator.ElevAtFloor() {
+	} else if elevator.AtFloor() {
 		return "IDLE", nil
 	} else {
 		return mystate, nil
