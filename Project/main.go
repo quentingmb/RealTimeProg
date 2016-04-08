@@ -28,7 +28,7 @@ func main() {
 
 	state := "INIT"
 	driver.IoInit()
-	elevator.Init()
+	elevator.ElevInit()
 
 	for {
 		time.Sleep(10 * time.Millisecond)
