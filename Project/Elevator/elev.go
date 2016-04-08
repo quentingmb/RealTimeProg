@@ -42,6 +42,17 @@ func SetElevSpeed (speed int) {
 	}
 	driver.WriteAnalog(driver.MOTOR, 2048+4*math.Abs(speed))
 }
+func CurrentFloor() int {
+	floor := 1
+	if driver.ReadBit(driver.FLOOR_IND2) {
+		floor = floor + 1
+	}
+	if driver.ReadBit(driver.FLOOR_IND1) {
+		floor = floor + 2
+	}
+	return floor
+}
+
 func SetElevFloorIndicator(floor int) {
 	//one light sould be on
 	if floor == 3 || floor == 4 {
@@ -103,6 +114,18 @@ func GetElevStopSignal() bool {
 }
 func GetElevObstructionSignal() bool {
 		return driver.Read_bit(driver.OBSTRUCTION)
+}
+func ElevAtFloor() bool {
+	if GetElevFloorSensorSignal() != -1 {
+		return true
+	}
+	return false
+}
+func UpdateFloor() {
+	floor := GetElevFloorSensorSignal()
+	if floor != -1 {
+		SetElevFloorIndicator(floor)
+	}
 }
 func ElevInit() {
 	// Zero all floor button lamps
