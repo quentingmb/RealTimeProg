@@ -42,7 +42,7 @@ func SetElevSpeed(speed int) {
 	}
 	driver.WriteAnalog(driver.MOTOR, 2048+4*math.Abs(speed))
 }
-func InFloor() int {
+func CurrentFloor() int {
 	floor := 1
 	if driver.ReadBit(driver.FLOOR_IND2) {
 		floor = floor + 1
