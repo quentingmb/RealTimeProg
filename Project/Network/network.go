@@ -6,7 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"misc"
+	"math"
+	"config"
 	"net"
 	"os"
 	"strings"
@@ -115,7 +116,7 @@ func Requestdistr(generatedMsgs_c chan ElevatorMessage, myip string) {
 	}
 }
 
-func Dialer(connect_c chan Con, port string, elevators []misc.Elevator, error_c chan string) {
+func Dialer(connect_c chan Con, port string, elevators []config.Elevator, error_c chan string) {
 	local, _ := net.ResolveTCPAddr("tcp", "localhost"+port)
 	localconn, _ := net.DialTCP("tcp", nil, local)
 	connect_c <- Con{Address: localconn, Connect: true}
@@ -186,7 +187,7 @@ func SendAliveMessages(connection *net.TCPConn, error_c chan string) {
 	}
 }
 
-func TCPPeerToPeer(conf misc.Config, myip string, generatedmessages_c chan Elevatormessage) {
+func TCPPeerToPeer(conf config.Config, myip string, generatedmessages_c chan Elevatormessage) {
 	elevlog, err := os.OpenFile("elevator.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		fmt.Println("Error opening file: " + err.Error())
@@ -275,7 +276,7 @@ func TCPPeerToPeer(conf misc.Config, myip string, generatedmessages_c chan Eleva
 }
 
 func SendStatuslist(generatedMsgs_c chan ElevatorMessage) {
-	myip := misc.GetLocalIP()
+	myip := GetLocalIP()
 	myinfo := infolist[myip]
 	generatedMsgs_c <- ElevatorMessage{Request: Request{}, Info: myinfo}
 }
