@@ -6,7 +6,7 @@ import (
 	. "fmt"
 	"extra"
 	"network"
-	"Elevatorlogic"
+	"ElevatorLogic"
 	"runtime"
 	"time"
 )
@@ -23,31 +23,31 @@ func main() {
 
 	conf := extra.LoadConfig("./config/conf.json")
 
-	generatedmessages_c := make(chan network.Networkmessage, 100)
-	go network.TCPPeerToPeer(conf, myip, generatedmessages_c)
+	generatedmessages_c := make(chan Network.Networkmessage, 100)
+	go Network.TCPPeerToPeer(conf, myip, generatedmessages_c)
 
 	state := "INIT"
 	driver.IoInit()
-	elevator.ElevInit()
+	Elevator.ElevInit()
 
 	for {
 		time.Sleep(10 * time.Millisecond)
 		myinfo.State = state
-		elevator.UpdateFloor()
+		Elevator.UpdateFloor()
 		myinfo.LastFloor = elevator.CurrentFloor()
-		network.NewInfo(myinfo, generatedmessages_c)
+		Network.NewInfo(myinfo, generatedmessages_c)
 		switch state {
 		case "INIT":
 			{
-				elevator.SetElevSpeed(-300)
+				Elevator.SetElevSpeed(-300)
 			}
 		case "IDLE":
 			{
-				elevator.SetElevSpeed(0)
+				Elevator.SetElevSpeed(0)
 			}
 		case "UP":
 			{
-				elevator.SetElevSpeed(300)
+				Elevator.SetElevSpeed(300)
 			}
 		case "DOWN":
 			{
@@ -55,20 +55,20 @@ func main() {
 			}
 		case "DOOR_OPEN":
 			{
-				elevator.SetElevDoorOpenLamp(1)
+				Elevator.SetElevDoorOpenLamp(1)
 				for _, request := range takerequest {
 					request.InOut = 0
 					Println("Deleting request: ", request)
 					time.Sleep(10 * time.Millisecond)
-					network.Newrequest(generatedmessages_c, request)
+					Network.Newrequest(generatedmessages_c, request)
 				}
-				elevator.SetElevSpeed(0)
+				Elevator.SetElevSpeed(0)
 				time.Sleep(3000 * time.Millisecond)
-				elevator.etElevDoorOpenLamp(0)
+				Elevator.etElevDoorOpenLamp(0)
 			}
 		case "ERROR":
 			{
-				elevator.SetElevSpeed(0)
+				Elevator.SetElevSpeed(0)
 			}
 		}
 		state, takerequest = ElevatorLogic.Nextstate(myip, conf.Elevators, myinfo.State)
