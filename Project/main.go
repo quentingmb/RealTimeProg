@@ -6,7 +6,7 @@ import (
 	. "fmt"
 	"extra"
 	"network"
-	"elevatorlogic"
+	"Elevatorlogic"
 	"runtime"
 	"time"
 )
@@ -17,7 +17,7 @@ func main() {
 
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	myip := misc.GetLocalIP()
+	myip := network.GetLocalIP()
 	Println(myip)
 	myinfo.Source = myip
 
@@ -28,49 +28,49 @@ func main() {
 
 	state := "INIT"
 	driver.IoInit()
-	elevator.ElevInit()
+	elevator.Init()
 
 	for {
 		time.Sleep(10 * time.Millisecond)
 		myinfo.State = state
-		elevator.FloorUpdater()
+		elevator.UpdateFloor()
 		myinfo.LastFloor = elevator.CurrentFloor()
 		network.NewInfo(myinfo, generatedmessages_c)
 		switch state {
 		case "INIT":
 			{
-				elevator.ElevSetSpeed(-300)
+				elevator.SetElevSpeed(-300)
 			}
 		case "IDLE":
 			{
-				elevator.ElevSetSpeed(0)
+				elevator.SetElevSpeed(0)
 			}
 		case "UP":
 			{
-				elevator.ElevSetSpeed(300)
+				elevator.SetElevSpeed(300)
 			}
 		case "DOWN":
 			{
-				elevator.ElevSetSpeed(-300)
+				elevator.SetElevSpeed(-300)
 			}
 		case "DOOR_OPEN":
 			{
-				elevator.ElevSetDoorOpenLamp(1)
+				elevator.SetElevDoorOpenLamp(1)
 				for _, request := range takerequest {
 					request.InOut = 0
 					Println("Deleting request: ", request)
 					time.Sleep(10 * time.Millisecond)
 					network.Newrequest(generatedmessages_c, request)
 				}
-				elevator.ElevSetSpeed(0)
+				elevator.SetElevSpeed(0)
 				time.Sleep(3000 * time.Millisecond)
-				elevator.ElevSetDoorOpenLamp(0)
+				elevator.etElevDoorOpenLamp(0)
 			}
 		case "ERROR":
 			{
-				elevator.ElevSetSpeed(0)
+				elevator.SetElevSpeed(0)
 			}
 		}
-		state, takerequest = elevatorlogic.Nextstate(myip, conf.Elevators, myinfo.State)
+		state, takerequest = ElevatorLogic.Nextstate(myip, conf.Elevators, myinfo.State)
 	}
 }
