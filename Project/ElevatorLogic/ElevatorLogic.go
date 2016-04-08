@@ -1,4 +1,3 @@
-
 package ElevatorLogic
 
 import (
@@ -8,7 +7,7 @@ import (
 )
 //This function does a BFS-search through all orders to find the most effective solution
 func Nextrequest(myip string, Elevatorlist []misc.Elevator) Network.Request {
-	var statelist = make(map[string]network.Info)
+	var statelist = make(map[string]Network.Info)
 	infolist := Network.GetInfoList()
 	for host, info := range infolist {
 		statelist[host] = info
@@ -50,10 +49,10 @@ insideloop:
 	}
 requestloop:
 	for _, request := range requestlist {
-		if request.Direction == elevator.BUTTON_COMMAND {
+		if request.Direction == Elevator.BUTTON_COMMAND {
 			continue requestloop
 		}
-		for i := 0; i < elevator.N_FLOORS; i++ {
+		for i := 0; i < Elevator.N_FLOORS; i++ {
 			for _, elevator := range Elevatorlist {
 				if info, ok := statelist[Elevator.Address]; ok {
 					if i != 0 && (info.State == "UP" && info.LastFloor+i == request.Floor) || (info.State == "DOWN" && info.LastFloor-i == request.Floor) {
@@ -80,7 +79,7 @@ requestloop:
 			}
 		}
 	}
-	return network.EmptyRequest[0]
+	return Network.EmptyRequest[0]
 }
 
 //This function return orders the elevator should stop for
@@ -89,7 +88,7 @@ func Stop(myip string, mystate string) []Network.Request {
 	requestlist := Network.GetRequestList()
 	for _, request := range requestlist {
 		if (request.Direction == Elevator.BUTTON_COMMAND && request.Source == myip) || (request.Direction == Elevator.BUTTON_CALL_UP && mystate == "UP") || (request.Direction == Elevator.BUTTON_CALL_DOWN && mystate == "DOWN") {
-			if request.Floor == Elevator.CurrentFloor() && elevator.AtFloor() {
+			if request.Floor == Elevator.CurrentFloor() && Elevator.AtFloor() {
 				takerequest = append(takerequest, request)
 			}
 		}
@@ -99,7 +98,7 @@ func Stop(myip string, mystate string) []Network.Request {
 //This function returns the next state for the elevator
 func Nextstate(myip string, elevators []extra.Elevator, mystate string) (string, []Network.Request) {
 	if Elevator.GetElevObstructionSignal() {
-		Eelevator.SetElevStopLamp(1)
+		Elevator.SetElevStopLamp(1)
 		return "ERROR", nil
 	} else if mystate == "ERROR" {
 		Elevator.SetElevStopLamp(0)
@@ -112,7 +111,7 @@ func Nextstate(myip string, elevators []extra.Elevator, mystate string) (string,
 	}
 
 	next := Nextrequest(myip, elevators)
-	if elevator.AtFloor() && next.Floor == Elevator.CurrentFloor() {
+	if Elevator.AtFloor() && next.Floor == Elevator.CurrentFloor() {
 		return "DOOR_OPEN", append(stop, next)
 	}
 	if next.Floor > Elevator.CurrentFloor() {
