@@ -1,32 +1,32 @@
 
-package elevatorlogic
+package ElevatorLogic
 
 import (
-	"elevator"
+	"Elevator"
 	"extra"
-	"network"
+	"Network"
 )
 //This function does a BFS-search through all orders to find the most effective solution
-func Nextrequest(myip string, Elevatorlist []misc.Elevator) network.Request {
+func Nextrequest(myip string, Elevatorlist []misc.Elevator) Network.Request {
 	var statelist = make(map[string]network.Info)
-	infolist := network.GetInfoList()
+	infolist := Network.GetInfoList()
 	for host, info := range infolist {
 		statelist[host] = info
 	}
-	requestlist := network.GetRequestList()
+	requestlist := Network.GetRequestList()
 insideloop:
 	for _, request := range requestlist {
-		if request.Direction != elevator.BUTTON_COMMAND {
+		if request.Direction != Elevator.BUTTON_COMMAND {
 			continue insideloop
 		}
 		for _, elevator := range Elevatorlist {
-			if info, ok := statelist[elevator.Address]; ok {
+			if info, ok := statelist[Elevator.Address]; ok {
 				if ((info.State == "UP" || info.State == "IDLE") && info.LastFloor <= request.Floor) || ((info.State == "DOWN" || info.State == "IDLE") && info.LastFloor >= request.Floor) {
 					if info.Source == request.Source {
 						if info.Source == myip {
 							return request
 						} else {
-							delete(statelist, elevator.Address)
+							delete(statelist, Elevator.Address)
 							continue insideloop
 						}
 					}
@@ -34,13 +34,13 @@ insideloop:
 			}
 		}
 		for _, elevator := range Elevatorlist {
-			if info, ok := statelist[elevator.Address]; ok {
+			if info, ok := statelist[Elevator.Address]; ok {
 				if (info.State == "UP" && info.LastFloor >= request.Floor) || (info.State == "DOWN" && info.LastFloor <= request.Floor){
 					if info.Source == request.Source {
 						if info.Source == myip {
 							return request
 						} else {
-							delete(statelist, elevator.Address)
+							delete(statelist, Elevator.Address)
 							continue insideloop
 						}
 					}
@@ -55,24 +55,24 @@ requestloop:
 		}
 		for i := 0; i < elevator.N_FLOORS; i++ {
 			for _, elevator := range Elevatorlist {
-				if info, ok := statelist[elevator.Address]; ok {
+				if info, ok := statelist[Elevator.Address]; ok {
 					if i != 0 && (info.State == "UP" && info.LastFloor+i == request.Floor) || (info.State == "DOWN" && info.LastFloor-i == request.Floor) {
-						if statelist[elevator.Address].Source == myip {
+						if statelist[Elevator.Address].Source == myip {
 							return request
 						} else {
-							delete(statelist, elevator.Address)
+							delete(statelist, Elevator.Address)
 							continue requestloop
 						}
 					}
 				}
 			}
 			for _, elevator := range Elevatorlist {
-				if info, ok := statelist[elevator.Address]; ok {
+				if info, ok := statelist[Elevator.Address]; ok {
 					if info.State == "IDLE" && (info.LastFloor == request.Floor+i || info.LastFloor == request.Floor-i) {
-						if statelist[elevator.Address].Source == myip {
+						if statelist[Elevator.Address].Source == myip {
 							return request
 						} else {
-							delete(statelist, elevator.Address)
+							delete(statelist, Elevator.Address)
 							continue requestloop
 						}
 					}
@@ -84,12 +84,12 @@ requestloop:
 }
 
 //This function return orders the elevator should stop for
-func Stop(myip string, mystate string) []network.Request {
-	var takerequest []network.Request
-	requestlist := network.GetRequestList()
+func Stop(myip string, mystate string) []Network.Request {
+	var takerequest []Network.Request
+	requestlist := Network.GetRequestList()
 	for _, request := range requestlist {
-		if (request.Direction == elevator.BUTTON_COMMAND && request.Source == myip) || (request.Direction == elevator.BUTTON_CALL_UP && mystate == "UP") || (request.Direction == elevator.BUTTON_CALL_DOWN && mystate == "DOWN") {
-			if request.Floor == elevator.CurrentFloor() && elevator.AtFloor() {
+		if (request.Direction == Elevator.BUTTON_COMMAND && request.Source == myip) || (request.Direction == Elevator.BUTTON_CALL_UP && mystate == "UP") || (request.Direction == Elevator.BUTTON_CALL_DOWN && mystate == "DOWN") {
+			if request.Floor == Elevator.CurrentFloor() && elevator.AtFloor() {
 				takerequest = append(takerequest, request)
 			}
 		}
@@ -97,12 +97,12 @@ func Stop(myip string, mystate string) []network.Request {
 	return takerequest
 }
 //This function returns the next state for the elevator
-func Nextstate(myip string, elevators []misc.Elevator, mystate string) (string, []network.Request) {
-	if elevator.GetElevObstructionSignal() {
-		elevator.SetElevStopLamp(1)
+func Nextstate(myip string, elevators []extra.Elevator, mystate string) (string, []Network.Request) {
+	if Elevator.GetElevObstructionSignal() {
+		Eelevator.SetElevStopLamp(1)
 		return "ERROR", nil
 	} else if mystate == "ERROR" {
-		elevator.SetElevStopLamp(0)
+		Elevator.SetElevStopLamp(0)
 		return "INIT", nil
 	}
 
@@ -112,14 +112,14 @@ func Nextstate(myip string, elevators []misc.Elevator, mystate string) (string, 
 	}
 
 	next := Nextrequest(myip, elevators)
-	if elevator.AtFloor() && next.Floor == elevator.CurrentFloor() {
+	if elevator.AtFloor() && next.Floor == Elevator.CurrentFloor() {
 		return "DOOR_OPEN", append(stop, next)
 	}
-	if next.Floor > elevator.CurrentFloor() {
+	if next.Floor > Elevator.CurrentFloor() {
 		return "UP", nil
-	} else if next.Floor < elevator.CurrentFloor() && next.Floor != 0 {
+	} else if next.Floor < Elevator.CurrentFloor() && next.Floor != 0 {
 		return "DOWN", nil
-	} else if elevator.AtFloor() {
+	} else if Elevator.AtFloor() {
 		return "IDLE", nil
 	} else {
 		return mystate, nil
