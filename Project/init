@@ -3,7 +3,7 @@
 export GOPATH="$PWD"
 
 go install network
-go install elevatorLogic
+go install ElevatorLogic
 go install driver
 go install extra
 go install math
