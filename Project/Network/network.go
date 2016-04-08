@@ -11,6 +11,8 @@ import (
 	"os"
 	"strings"
 	"time"
+	"io/ioutil"
+	"os/exec"
 	)
 
  type Request struct {
@@ -39,6 +41,17 @@ var requestList=make([]Request,0)
 var elevators = make(map[string]bool)
 var infolist = make(map[string]Status)
 var connections = make([]*net.TCPConn, 0)
+
+func GetLocalIP() string {
+	oneliner := "ifconfig | grep 129.241.187 | cut -d':' -f2 | cut -d' ' -f1" //Favourite Oneliner
+	cmd := exec.Command("bash", "-c", oneliner)
+	out, err := cmd.Output()
+	if err != nil {
+		fmt.Println(err)
+	}
+	ip := strings.TrimSpace(string(out))
+	return ip
+}
 
 func GetInfoList() map[string]Info {
 	return Infolist
