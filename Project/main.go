@@ -2,22 +2,22 @@ package main
 
 import (
 	"driver"
-	"elevator"
+	"Elevator"
 	. "fmt"
 	"extra"
-	"network"
+	"Network"
 	"ElevatorLogic"
 	"runtime"
 	"time"
 )
 
 func main() {
-	var myinfo network.Info
-	var takerequest []network.Request
+	var myinfo Network.Info
+	var takerequest []Network.Request
 
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	myip := network.GetLocalIP()
+	myip := Network.GetLocalIP()
 	Println(myip)
 	myinfo.Source = myip
 
@@ -34,7 +34,7 @@ func main() {
 		time.Sleep(10 * time.Millisecond)
 		myinfo.State = state
 		Elevator.UpdateFloor()
-		myinfo.LastFloor = elevator.CurrentFloor()
+		myinfo.LastFloor = Elevator.CurrentFloor()
 		Network.NewInfo(myinfo, generatedmessages_c)
 		switch state {
 		case "INIT":
@@ -51,7 +51,7 @@ func main() {
 			}
 		case "DOWN":
 			{
-				elevator.SetElevSpeed(-300)
+				Elevator.SetElevSpeed(-300)
 			}
 		case "DOOR_OPEN":
 			{
